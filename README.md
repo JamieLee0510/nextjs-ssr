@@ -151,4 +151,40 @@ hydrateRoot(document.getElementById("root"), <App />);
 這樣一來，就可以不用完全重新渲染、就可以綁定事件，減少了browser的渲染開銷。
 
 ## 流式SSR
-而在SSR時，如果單一組件過大
+雖然SSR相較於CSR，可以事先在服務端渲染好再傳送到客戶端，白屏時間減少。不過如果組件過大，也會造成服務端響應耗時過久、讓用戶等待的情形。而 Stream SSR，可以流式傳送已經渲染好的組件、進而加快出始加載時間。
+
+- 在 server.js中，引入`renderToPipeableStream`，此為基於 HTTP/1.1 中的**Chunked transfer encoding**機制
+```
+import { renderToPipeableStream } from 'react-dom/server';
+```
+
+- 在 html字符串中，依據`<div id="root"></div>` 切分前後，作為初始渲染和渲染結束的頭與尾。
+
+```
+const [head, tail] = htmlData.split('<div id="root"></div>');
+```
+
+- 主要 stream ssr的邏輯部分
+```
+res.write(head + '<div id="root">'); // 寫入頭
+const stream = renderToPipeableStream(<App />, {
+    onShellReady() {
+        res.statusCode = 200;
+        stream.pipe(res, {end: false}); // 開始傳輸
+    },
+    onShellError(err) {
+        console.error(err);
+        res.statusCode = 500;
+        res.send('Server Error');
+        res.end();
+    },
+    onAllReady() {
+        res.write('</div>' + tail); // 寫入尾
+        res.end();
+    },
+});
+```
+
+在demo中，簡單寫了3個包含10000個item的list組件，在console中可以看出頁面是在不斷加載、但頁面有先掛載出已經渲染的部分、並沒有一直等待。
+
+// TODO: 加上比較
