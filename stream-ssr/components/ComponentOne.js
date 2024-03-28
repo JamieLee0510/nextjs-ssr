@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 export const ComponentOne = () => {
 
-  const items = Array.from({ length: 1000 }, (_, index) => `Item ${index + 1} from Component One`);
+  const items = Array.from({ length: 10000 }, (_, index) => `Item ${index + 1} from Component One`);
  
 
   return <div>

@@ -6,7 +6,7 @@
     "scripts": {
         "build-client": "webpack --config webpack.client.js",
         "build-server": "webpack --config webpack.server.js",
-        "runtime": "node ./build/server.bundle.js",
+        "runtime": "node ./dist/server.bundle.js",
         "start": "npm run build-client && npm run build-server && npm run runtime"
     },
     "keywords": [],

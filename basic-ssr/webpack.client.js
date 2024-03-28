@@ -5,7 +5,7 @@ module.exports = {
     entry: "./client.js",
     output: {
         filename: "client.bundle.js",
-        path: path.resolve(__dirname, "public"),
+        path: path.resolve(__dirname, "dist"),
     },
     module: {
         rules: [

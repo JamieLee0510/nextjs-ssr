@@ -4,13 +4,14 @@ import { renderToString } from "react-dom/server";
 import App from "./app/page";
 
 const app = express();
-app.use(express.static("public")); // 聲明靜態目錄，用於讀取 client.bundle.js
+app.use(express.static("dist")); // 聲明靜態目錄，用於讀取 client.bundle.js
 
-const content = renderToString(<App />);
 
 const PORT = 3060;
 
-app.get("/", (req, res) =>
+app.get("/", (req, res) =>{   
+    const content = renderToString(<App />);
+    console.log("--content:", content)
     res.send(`
         <html>
             <head>
@@ -21,9 +22,9 @@ app.get("/", (req, res) =>
                     ${content}
                 </div>
             </body>
-            <script src="/client.bundle.js"></script>
+            <script src="./client.bundle.js"></script>
         </html>
     `)
-);
+});
 
 app.listen(PORT, () => console.log(`listening on port ${PORT}!`));
